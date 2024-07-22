@@ -82,11 +82,34 @@ if __name__ == '__main__':
 
     # Sort the final DataFrame by its index
     Final_df.sort_index(inplace=True)
+    print(Final_df.columns)
+    # What are the departments of the top ten employees in terms of working hours?
+    # Final_df.sort_values('average_monthly_hours', inplace=True, ascending=False)
+    # print(Final_df['Department'].head(10).tolist())
 
-    # Print the list of indexes of the final DataFrame
-    print(Final_df.index.tolist())
+    # What is the total number of projects on which IT department employees with low salaries have worked?
+    # print(Final_df.query('Department == "IT" & salary == "low"')['number_project'].sum())
 
-    # Print the list of column names of the final DataFrame
-    print(Final_df.columns.tolist())
+    # What are the last evaluation scores and the satisfaction levels of the employees A4, B7064, and A3033?
+    # employeesId = ['A4', 'B7064', 'A3033']
+    # print(Final_df.loc[['A4', 'B7064', 'A3033'], ['last_evaluation','satisfaction_level']].values.tolist())
+
+    # Group by 'left' column and calculate the required metrics
+    def count_bigger_5(series):
+        return (series > 5).sum()
+
+    metrics = {
+        'number_project': ['median', count_bigger_5],
+        'time_spend_company': ['mean', 'median'],
+        'Work_accident': 'mean',
+        'last_evaluation': ['mean', 'std']
+    }
+
+    # Convert the resulting DataFrame to a dictionary
+    print(Final_df.groupby('left').agg(metrics).round(2).to_dict())
+
+
+
+
 
 
