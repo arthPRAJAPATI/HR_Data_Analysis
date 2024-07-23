@@ -82,7 +82,6 @@ if __name__ == '__main__':
 
     # Sort the final DataFrame by its index
     Final_df.sort_index(inplace=True)
-    print(Final_df.columns)
     # What are the departments of the top ten employees in terms of working hours?
     # Final_df.sort_values('average_monthly_hours', inplace=True, ascending=False)
     # print(Final_df['Department'].head(10).tolist())
@@ -95,18 +94,27 @@ if __name__ == '__main__':
     # print(Final_df.loc[['A4', 'B7064', 'A3033'], ['last_evaluation','satisfaction_level']].values.tolist())
 
     # Group by 'left' column and calculate the required metrics
-    def count_bigger_5(series):
-        return (series > 5).sum()
-
-    metrics = {
-        'number_project': ['median', count_bigger_5],
-        'time_spend_company': ['mean', 'median'],
-        'Work_accident': 'mean',
-        'last_evaluation': ['mean', 'std']
-    }
+    # def count_bigger_5(series):
+    #     return (series > 5).sum()
+    #
+    # metrics = {
+    #     'number_project': ['median', count_bigger_5],
+    #     'time_spend_company': ['mean', 'median'],
+    #     'Work_accident': 'mean',
+    #     'last_evaluation': ['mean', 'std']
+    # }
 
     # Convert the resulting DataFrame to a dictionary
-    print(Final_df.groupby('left').agg(metrics).round(2).to_dict())
+    # print(Final_df.groupby('left').agg(metrics).round(2).to_dict())
+    pivot_1 = Final_df.pivot_table(index='Department', columns=['left','salary'], values='average_monthly_hours', aggfunc='median').round(2)
+    result_1 = pivot_1[(pivot_1[(0, 'high')] < pivot_1[(0, 'medium')]) | (pivot_1[(1, 'low')] < pivot_1[(1, 'high')])]
+    print(result_1.to_dict())
+
+    pivot_2 = Final_df.pivot_table(index='time_spend_company', columns='promotion_last_5years', values=['satisfaction_level', 'last_evaluation'],
+                                   aggfunc=['max', 'min', 'mean']).round(2)
+    result_2 = pivot_2[pivot_2[('mean', 'last_evaluation', 1)] < pivot_2[('mean', 'last_evaluation', 0)]]
+    print(result_2.to_dict())
+
 
 
 
